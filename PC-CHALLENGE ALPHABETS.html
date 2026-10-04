@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>A-Z Typing World Record Challenge - Official Guinness Rules</title>
+    <style>
+        :root {
+            --bg-color: #030308;
+            --neon-cyan: #00f3ff;
+            --neon-pink: #ff0055;
+            --neon-green: #00ff66;
+            --neon-red: #ff3333;
+            --card-bg: rgba(10, 10, 25, 0.75);
+            --border-glow: rgba(0, 243, 255, 0.5);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            user-select: none;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(circle at 50% 20%, #1a0033 0%, transparent 40%),
+                radial-gradient(circle at 20% 80%, #001a33 0%, transparent 40%),
+                radial-gradient(circle at 80% 80%, #33001a 0%, transparent 40%);
+            color: #ffffff;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            perspective: 1200px;
+        }
+
+        /* Top Bar for Best Record */
+        .top-score-badge {
+            position: absolute;
+            top: 25px;
+            right: 35px;
+            background: rgba(0, 243, 255, 0.08);
+            border: 1px solid var(--border-glow);
+            padding: 12px 22px;
+            border-radius: 14px;
+            backdrop-filter: blur(10px);
+            font-size: 0.95rem;
+            letter-spacing: 1px;
+            color: #bbb;
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.15);
+            z-index: 10;
+        }
+
+        .top-score-badge span {
+            color: var(--neon-cyan);
+            font-weight: 700;
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 1.1rem;
+            text-shadow: 0 0 8px var(--neon-cyan);
+            margin-left: 6px;
+        }
+
+        /* 4D Floating Holographic Terminal */
+        .container {
+            position: relative;
+            background: var(--card-bg);
+            border: 2px solid var(--border-glow);
+            padding: 50px 60px;
+            border-radius: 28px;
+            width: 850px;
+            text-align: center;
+            box-shadow: 
+                0 30px 80px rgba(0, 0, 0, 0.9),
+                0 0 40px rgba(0, 243, 255, 0.2),
+                inset 0 0 30px rgba(0, 243, 255, 0.08);
+            backdrop-filter: blur(20px);
+            transform-style: preserve-3d;
+            transform: rotateX(6deg) rotateY(0deg);
+            animation: floatEffect 6s ease-in-out infinite alternate;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .container.failed {
+            border-color: var(--neon-red);
+            box-shadow: 
+                0 30px 80px rgba(0, 0, 0, 0.9),
+                0 0 50px rgba(255, 51, 51, 0.4),
+                inset 0 0 30px rgba(255, 51, 51, 0.15);
+            animation: shake 0.4s ease-in-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0) rotateX(6deg); }
+            20%, 60% { transform: translateX(-8px) rotateX(6deg); }
+            40%, 80% { transform: translateX(8px) rotateX(6deg); }
+        }
+
+        @keyframes floatEffect {
+            0% { transform: translateY(0px) rotateX(6deg) rotateY(-2deg); }
+            100% { transform: translateY(-12px) rotateX(-6deg) rotateY(2deg); }
+        }
+
+        h1 {
+            font-size: 2.2rem;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            margin-bottom: 12px;
+            color: #fff;
+            text-shadow: 0 0 12px var(--neon-cyan), 0 0 25px var(--neon-cyan);
+        }
+
+        p.subtitle {
+            font-size: 1.05rem;
+            color: #bbb;
+            margin-bottom: 35px;
+            letter-spacing: 1px;
+        }
+
+        /* High-Precision Timer Hologram */
+        .timer-box {
+            font-size: 5rem;
+            font-weight: 700;
+            font-family: 'Courier New', Courier, monospace;
+            color: var(--neon-cyan);
+            text-shadow: 0 0 20px var(--neon-cyan), 0 0 40px rgba(0, 243, 255, 0.6);
+            margin-bottom: 40px;
+            letter-spacing: 3px;
+        }
+
+        /* Alphabet Track Grid */
+        .alphabet-track {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 40px;
+        }
+
+        .letter-node {
+            width: 45px;
+            height: 55px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.03);
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #555;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Holographic States */
+        .letter-node.active {
+            color: var(--neon-cyan);
+            border-color: var(--neon-cyan);
+            background: rgba(0, 243, 255, 0.12);
+            box-shadow: 0 0 20px var(--neon-cyan);
+            transform: scale(1.2) translateZ(30px);
+        }
+
+        .letter-node.completed {
+            color: var(--neon-green);
+            border-color: var(--neon-green);
+            background: rgba(0, 255, 102, 0.12);
+            box-shadow: 0 0 15px rgba(0, 255, 102, 0.5);
+            transform: translateZ(10px);
+        }
+
+        .letter-node.error {
+            color: var(--neon-red);
+            border-color: var(--neon-red);
+            background: rgba(255, 51, 51, 0.2);
+            box-shadow: 0 0 20px var(--neon-red);
+            transform: scale(1.25);
+        }
+
+        /* Status & Instructions */
+        .status-msg {
+            font-size: 1.25rem;
+            color: var(--neon-pink);
+            text-shadow: 0 0 10px var(--neon-pink);
+            min-height: 35px;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+        }
+
+        .hint {
+            margin-top: 25px;
+            font-size: 0.85rem;
+            color: #666;
+            letter-spacing: 0.5px;
+        }
+
+        kbd {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #aaa;
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Top Highest Record Badge -->
+    <div class="top-score-badge">BEST TIME: <span id="bestRecordDisplay">--.---</span></div>
+
+    <div class="container" id="mainContainer">
+        <h1>A &rarr; Z World Record Terminal</h1>
+        <p class="subtitle">Guinness Rules: Press A-Z sequentially. Any wrong letter <strong>disqualifies</strong> the attempt!</p>
+
+        <div class="timer-box" id="timerDisplay">00.000</div>
+
+        <div class="alphabet-track" id="alphabetTrack">
+            <!-- Dynamically injected A-Z -->
+        </div>
+
+        <div class="status-msg" id="statusMsg">Press <kbd>A</kbd> on your keyboard to initialize sequence...</div>
+        <div class="hint">Press <kbd>ESC</kbd> at any time to abort and reset</div>
+    </div>
+
+    <script>
+        const alphabet = "abcdefghijklmnopqrstuvwxyz".split("");
+        let currentIndex = 0;
+        let startTime = null;
+        let timerInterval = null;
+        let isRunning = false;
+        let isFinished = false;
+        let isFailed = false;
+
+        const trackEl = document.getElementById("alphabetTrack");
+        const timerDisplay = document.getElementById("timerDisplay");
+        const statusMsg = document.getElementById("statusMsg");
+        const mainContainer = document.getElementById("mainContainer");
+        const bestRecordDisplay = document.getElementById("bestRecordDisplay");
+
+        // Load personal highest record (lowest time) from localStorage
+        let bestRecordTime = localStorage.getItem("az_pc_record_best");
+        function updateBestDisplay() {
+            if (bestRecordTime !== null) {
+                const elapsed = parseInt(bestRecordTime, 10);
+                const seconds = Math.floor(elapsed / 1000).toString().padStart(2, '0');
+                const milliseconds = (elapsed % 1000).toString().padStart(3, '0');
+                bestRecordDisplay.textContent = `${seconds}.${milliseconds}`;
+            } else {
+                bestRecordDisplay.textContent = "--.---";
+            }
+        }
+        updateBestDisplay();
+
+        // Initialize track boxes on load
+        function initTrack() {
+            trackEl.innerHTML = "";
+            alphabet.forEach((char, index) => {
+                const node = document.createElement("div");
+                node.className = `letter-node ${index === 0 ? 'active' : ''}`;
+                node.id = `node-${index}`;
+                node.textContent = char.toUpperCase();
+                trackEl.appendChild(node);
+            });
+        }
+
+        function updateTimer() {
+            const elapsed = Date.now() - startTime;
+            const seconds = Math.floor(elapsed / 1000).toString().padStart(2, '0');
+            const milliseconds = (elapsed % 1000).toString().padStart(3, '0');
+            timerDisplay.textContent = `${seconds}.${milliseconds}`;
+        }
+
+        window.addEventListener("keydown", (e) => {
+            const key = e.key.toLowerCase();
+
+            // Reset via ESC key
+            if (e.key === "Escape") {
+                resetChallenge();
+                return;
+            }
+
+            if (isFinished || isFailed) return;
+
+            // Check if user pressed any alphabetical key
+            if (alphabet.includes(key)) {
+                
+                // Validate if it's the EXACT correct next letter in sequence
+                if (key === alphabet[currentIndex]) {
+                    
+                    // Start millisecond clock on 'a'
+                    if (!isRunning) {
+                        isRunning = true;
+                        startTime = Date.now();
+                        timerInterval = setInterval(updateTimer, 10);
+                        statusMsg.textContent = "⚡ RECORDING WORLD RECORD ATTEMPT ⚡";
+                    }
+
+                    // Transition UI states for correct letter
+                    const currentNode = document.getElementById(`node-${currentIndex}`);
+                    currentNode.classList.remove("active");
+                    currentNode.classList.add("completed");
+
+                    currentIndex++;
+
+                    // Proceed or Finish
+                    if (currentIndex < alphabet.length) {
+                        const nextNode = document.getElementById(`node-${currentIndex}`);
+                        nextNode.classList.add("active");
+                    } else {
+                        // Success / Reached Z
+                        clearInterval(timerInterval);
+                        isRunning = false;
+                        isFinished = true;
+                        const finalTime = Date.now() - startTime;
+
+                        // Check and save lowest time record
+                        if (bestRecordTime === null || finalTime < parseInt(bestRecordTime, 10)) {
+                            bestRecordTime = finalTime;
+                            localStorage.setItem("az_pc_record_best", finalTime);
+                            updateBestDisplay();
+                            statusMsg.textContent = "🏆 NEW HIGHEST RECORD LOGGED! Press ESC to retry.";
+                        } else {
+                            statusMsg.textContent = "🏆 LEGENDARY! WORLD RECORD TIME LOGGED! Press ESC to retry.";
+                        }
+
+                        statusMsg.style.color = "var(--neon-green)";
+                        statusMsg.style.textShadow = "0 0 15px var(--neon-green)";
+                    }
+
+                } else {
+                    // GUINNESS RULE DISQUALIFICATION: Wrong letter pressed!
+                    clearInterval(timerInterval);
+                    isRunning = false;
+                    isFailed = true;
+                    
+                    mainContainer.classList.add("failed");
+
+                    // Highlight the expected active node with an error state
+                    const currentNode = document.getElementById(`node-${currentIndex}`);
+                    currentNode.classList.remove("active");
+                    currentNode.classList.add("error");
+
+                    statusMsg.textContent = `❌ DISQUALIFIED! Wrong letter '${key.toUpperCase()}' pressed. Press ESC to retry.`;
+                    statusMsg.style.color = "var(--neon-red)";
+                    statusMsg.style.textShadow = "0 0 12px var(--neon-red)";
+                }
+            }
+        });
+
+        function resetChallenge() {
+            clearInterval(timerInterval);
+            isRunning = false;
+            isFinished = false;
+            isFailed = false;
+            currentIndex = 0;
+            startTime = null;
+            timerDisplay.textContent = "00.000";
+            mainContainer.classList.remove("failed");
+            statusMsg.textContent = "Press A on your keyboard to initialize sequence...";
+            statusMsg.style.color = "var(--neon-pink)";
+            statusMsg.style.textShadow = "0 0 10px var(--neon-pink)";
+            initTrack();
+        }
+
+        initTrack();
+    </script>
+</body>
+</html>
